@@ -1,0 +1,5 @@
+1. we run a docker container, get in the running container -> install or add or update something in the running container -> then exit (the container stop) -> run the container again -> all changes we made is gone. the container back to the initial state where an image is built.
+    this is one the advantage of using container, changes we made like bad things will not affected when we restart the container.
+    also, it's isolated. we install postgres db on container will not affect to the postgres db local at all.
+    also, container package every environment setup we need for our app. so, if it's running on our machine, it will also run on other's machine.
+    also, container is used for GCP kube, AWS batch.

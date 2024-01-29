@@ -1,0 +1,22 @@
+services:
+  pgdatabase:
+    image: postgres:13
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=ny_taxi
+    volumes:
+      # in docker-compose, we dont need to write the full path. :rw is actually the default, but for clearness in the beginning
+      - ./ny_taxi_postgres_data:/var/lib/postgresql/data:rw
+    ports:
+      # hostPort:containerPort
+      - 2345:5432
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@admin.com
+      - PGADMIN_DEFAULT_PASSWORD=root
+    ports:
+      - 8080:80
+# since we defined those two containers (pgdatabase & pgadmin) in docker-compose
+  # they automatically become a part of the same netowrk --> so we also dont need to create a network and no need to speficy the network when we run docker run. it will happend automatically
