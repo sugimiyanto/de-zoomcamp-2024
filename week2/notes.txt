@@ -1,0 +1,68 @@
+Mage:
+Project -> like github repo
+Pipelines -> workflow that performs some operations. each pipeline is represented as a YAML file
+Blocks -> a file (SQL file, python file, etc) that can be executed independently
+
+We do:
+    - create an ETL pipeline
+        - extract a csv data from url with gzip format
+        - transform the data: clean data by removing records with zero passengers
+        - load the data to our local postgres
+    - we write data into partitioned files (parquest). why? it is much more efficient from query standpoint.
+        because if we do query to parquet files, we only look at specific folder which is the partition column instead of scanning all files.
+    - we use library called PyArrow which helps us to wrap steps to interact with GCS (insert data given pandas dataframe), and store files as parquet.
+        which if we do it manually, we have to iterate over the dataframe and separate it manually, and build connection with GCS.
+        PyArrow is the middleman helping us the paint point
+    - cool thing from Mage is that we can select directly from DataFrame
+    - the orchestration piece:
+        - we build pipelines, schedule them, we can create dependencies for example if we wanted a pipeline to run on completion of this one we could chain them together
+
+Best practices:
+    - ETL, data loading: specify the dtype when we load data using pandas.
+        # this is a best practice to declare types on pandas loading
+        # if data type change, it will fail. otherwise we dont know
+        # also drastically different in memory consumption if we declare dtype vs pandas use auto-infer dtype
+    - ETL, data processing and storage: standardize column name, either all snake_case or camelCase
+
+
+===
+
+parameterized execution: --> means running our pipeline with some dependency on a variable like the date. we might be storing files in gcp in a folder based on the year of month and day.
+- a pipeline execution that the result depends on a parameter. and it could be some ways:
+    1. parameterize based on result that we receive
+    2. create parameter based on execution date (built-in Mage)
+        on each function of block, there is **kwargs (keyword arguments). we can get like: "kwargs.get('execution_date')"
+        if we create trigger (schedule), we can set runtime variable
+    3. we get creative and store parameters elsewhere and the pull them in.
+
+Backfills
+- in a typical system we need to create backfill script/piptline that's going to simlate executing the original dag
+- in mage, we create a "backfill" on a pipeline. and the start_data to end_date will be the "execution_date" that we can get from kwargs.get('execution_date')
+
+deployment Mage to gcp
+- on mage github repo, there is template for each cloud providers, we can utilise it and make customization
+    - this is production ready deplyoment
+        more things can add: setup git sync, setup CI/CD, maintain scalability, etc.
+
+- on mage, there is version controll and it can connect to code hosting repo like github
+    on right-top corner -> settings -> git settings
+
+next steps:
+1. deployment
+2. pipelines
+    a. streaming
+    b. data integration
+3. alerting
+4. triggers & scheduling
+
+general advice about data engineering:
+1. The DTC zoomcamp
+2. personal projects. explore different personal project i can do to show my passion, show what i enjoy doing
+3. online resources/texts
+4. engaging with the data engineering community
+    a. meetups
+    b. conferences
+    c. linkedin. be friendly and be helpful
+    d. blogs
+
+BECAUSE: we can create a tons of cool things, but if it's in a vacuum and nobody knows about it. it's not as fun as if im engaging with other people and sharing my passion, which he finds it rewarding.
